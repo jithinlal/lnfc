@@ -12,7 +12,7 @@
 		"node-js",
 		"file-creator"
 	],
-	"author": "",
+	"author": "jithinlal",
 	"license": "ISC",
 	"dependencies": {
 		"change-case": "^4.1.1",
