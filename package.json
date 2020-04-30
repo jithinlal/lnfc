@@ -20,5 +20,6 @@
 		"fs-extra": "^9.0.0",
 		"inquirer": "^7.1.0",
 		"lower-case": "^2.0.1"
-	}
+	},
+	"homepage": "https://github.com/jithinlal/lnfc"
 }
