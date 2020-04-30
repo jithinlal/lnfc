@@ -1,0 +1,24 @@
+{
+	"name": "lnfc",
+	"version": "1.0.0",
+	"description": "Lal's Nodejs File structure Creator or LNFC",
+	"main": "index.js",
+	"preferGlobal": true,
+	"bin": "./index.js",
+	"scripts": {
+		"test": ""
+	},
+	"keywords": [
+		"node-js",
+		"file-creator"
+	],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"change-case": "^4.1.1",
+		"commander": "^5.1.0",
+		"fs-extra": "^9.0.0",
+		"inquirer": "^7.1.0",
+		"lower-case": "^2.0.1"
+	}
+}
