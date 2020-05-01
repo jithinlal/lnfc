@@ -79,7 +79,7 @@ const createController = (controller) => {
 	});
 };
 
-const createRoute = (route) => {
+const createRoute = (route, mwr) => {
 	!fs.existsSync('Routes') && fs.mkdirSync('Routes');
 
 	let src = path.join(__dirname, '/templates/base.route.js');
@@ -101,6 +101,18 @@ const createRoute = (route) => {
 
 			let result = data.replace(/{base}/g, `${lowerCase(route)}`);
 			result = result.replace(/{Base}/g, `${capitalCase(route)}`);
+
+			if (mwr) {
+				result = result.replace(
+					/{Middleware, }/g,
+					`${lowerCase(mwr)}Middleware, `,
+				);
+				result = result.replace(/--/g, '');
+				result = result.replace(/{mwrname}/g, `${lowerCase(mwr)}`);
+			} else {
+				result = result.replace(/{Middleware, }/g, ``);
+				result = result.replace(/--.*--/, '');
+			}
 
 			fs.writeFile(dest, result, 'utf8', function (err) {
 				if (err) {
@@ -154,6 +166,44 @@ const createService = (service) => {
 	});
 };
 
+const createMiddleware = (middleware) => {
+	!fs.existsSync('Middlewares') && fs.mkdirSync('Middlewares');
+
+	let src = path.join(__dirname, '/templates/base.middleware.js');
+	let dest = path.join(
+		process.cwd(),
+		`/Middlewares/${lowerCase(middleware)}.middleware.js`,
+	);
+
+	fse.copy(src, dest, (err) => {
+		if (err) {
+			console.error(err);
+			process.exit(1);
+			return;
+		}
+
+		fs.readFile(dest, 'utf8', function (err, data) {
+			if (err) {
+				console.error(err);
+				process.exit(1);
+				return;
+			}
+
+			let result = data.replace(/{base}/g, `${lowerCase(middleware)}`);
+
+			fs.writeFile(dest, result, 'utf8', function (err) {
+				if (err) {
+					console.error(err);
+					process.exit(1);
+					return;
+				}
+
+				console.log('Created the middleware file');
+			});
+		});
+	});
+};
+
 const complete = (root) => {
 	createModel(root);
 	createController(root);
@@ -167,4 +217,5 @@ module.exports = {
 	createRoute,
 	createService,
 	complete,
+	createMiddleware,
 };

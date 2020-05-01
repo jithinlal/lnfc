@@ -8,6 +8,7 @@ const {
 	createController,
 	createRoute,
 	createService,
+	createMiddleware,
 	complete,
 } = require('./logic');
 
@@ -40,13 +41,30 @@ program
 program
 	.command('route')
 	.alias('r')
+	.option(
+		'-m --middleware',
+		'provide if you want auto middleware enabled on route end points.',
+		false,
+	)
 	.description('Route Name')
-	.action(() => {
+	.action((option) => {
 		prompt({
 			type: 'input',
 			name: 'route',
 			message: 'Enter the route name',
-		}).then((answer) => createRoute(answer.route));
+		}).then((answer) => {
+			if (option.middleware) {
+				prompt({
+					type: 'input',
+					name: 'name',
+					message: 'Enter the middleware name',
+				}).then(({ name }) => {
+					createRoute(answer.route, name);
+				});
+			} else {
+				createRoute(answer.route, null);
+			}
+		});
 	});
 
 program
@@ -59,6 +77,18 @@ program
 			name: 'service',
 			message: 'Enter the service name',
 		}).then((answer) => createService(answer.service));
+	});
+
+program
+	.command('middleware')
+	.alias('w')
+	.description('Middleware Name')
+	.action(() => {
+		prompt({
+			type: 'input',
+			name: 'middleware',
+			message: 'Enter the middleware name',
+		}).then((answer) => createMiddleware(answer.middleware));
 	});
 
 program
