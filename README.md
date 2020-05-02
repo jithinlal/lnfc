@@ -13,7 +13,7 @@ With LNFC you could generate:
 
 ### Installation
 
-Dillinger requires [Node.js](https://nodejs.org/) to run.
+LNFC requires [Node.js](https://nodejs.org/) to run.
 
 Install LNFC as a devDependency, in your project folder
 
