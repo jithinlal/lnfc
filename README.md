@@ -15,11 +15,10 @@ With LNFC you could generate:
 
 LNFC requires [Node.js](https://nodejs.org/) to run.
 
-Install LNFC as a devDependency, in your project folder
+Install LNFC as a global npm package.
 
 ```sh
-$ npm install lnfc --save-dev
-```
+$ npm install lnfc -g
 
 ### Options
 
@@ -39,3 +38,4 @@ Make use of the options below along with a name to generate the corresponding fi
 MIT
 
 **Free Software, Hell Yeah!**
+```
