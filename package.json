@@ -1,6 +1,6 @@
 {
 	"name": "lnfc",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "Lal's Nodejs File structure Creator or LNFC",
 	"main": "index.js",
 	"preferGlobal": true,
