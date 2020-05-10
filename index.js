@@ -12,7 +12,7 @@ const {
 	complete,
 } = require('./logic');
 
-program.version('0.0.1').description('SA-NODE-PROJECT-STRUCTURE');
+program.version('0.0.1').description('LAL-NODE-FILE-STRUCTURE-CREATOR');
 
 program
 	.command('model')
@@ -94,13 +94,18 @@ program
 program
 	.command('all')
 	.alias('a')
-	.description('Root Name of the complete file')
-	.action(() => {
+	.option(
+		'-f --feature',
+		'provide if you want your files organized around features not on roles.',
+		false,
+	)
+	.description('Root Name of the feature')
+	.action((option) => {
 		prompt({
 			type: 'input',
 			name: 'root',
-			message: 'Enter the root file name',
-		}).then((answer) => complete(answer.root));
+			message: 'Enter the feature name',
+		}).then((answer) => complete(answer.root, option.feature));
 	});
 
 program.parse(process.argv);

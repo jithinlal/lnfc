@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const fse = require('fs-extra');
 const { capitalCase } = require('change-case');
 const { lowerCase } = require('lower-case');
+
+const { copy, argCopy } = require('./core/file-copy');
 
 const createModel = (model) => {
 	!fs.existsSync('Models') && fs.mkdirSync('Models');
@@ -10,34 +11,7 @@ const createModel = (model) => {
 	let src = path.join(__dirname, '/templates/Base.js');
 	let dest = path.join(process.cwd(), `/Models/${capitalCase(model)}.js`);
 
-	fse.copy(src, dest, (err) => {
-		if (err) {
-			console.error(err);
-			process.exit(1);
-			return;
-		}
-
-		fs.readFile(dest, 'utf8', function (err, data) {
-			if (err) {
-				console.error(err);
-				process.exit(1);
-				return;
-			}
-
-			let result = data.replace(/{base}/g, `${lowerCase(model)}`);
-			result = result.replace(/{Base}/g, `${capitalCase(model)}`);
-
-			fs.writeFile(dest, result, 'utf8', function (err) {
-				if (err) {
-					console.error(err);
-					process.exit(1);
-					return;
-				}
-
-				console.log('Created the model file');
-			});
-		});
-	});
+	copy(src, dest, model);
 };
 
 const createController = (controller) => {
@@ -49,34 +23,7 @@ const createController = (controller) => {
 		`/Controllers/${lowerCase(controller)}.controller.js`,
 	);
 
-	fse.copy(src, dest, (err) => {
-		if (err) {
-			console.error(err);
-			process.exit(1);
-			return;
-		}
-
-		fs.readFile(dest, 'utf8', function (err, data) {
-			if (err) {
-				console.error(err);
-				process.exit(1);
-				return;
-			}
-
-			let result = data.replace(/{base}/g, `${lowerCase(controller)}`);
-			result = result.replace(/{Base}/g, `${capitalCase(controller)}`);
-
-			fs.writeFile(dest, result, 'utf8', function (err) {
-				if (err) {
-					console.error(err);
-					process.exit(1);
-					return;
-				}
-
-				console.log('Created the controller file');
-			});
-		});
-	});
+	copy(src, dest, controller);
 };
 
 const createRoute = (route, mwr) => {
@@ -85,46 +32,7 @@ const createRoute = (route, mwr) => {
 	let src = path.join(__dirname, '/templates/base.route.js');
 	let dest = path.join(process.cwd(), `/Routes/${lowerCase(route)}.route.js`);
 
-	fse.copy(src, dest, (err) => {
-		if (err) {
-			console.error(err);
-			process.exit(1);
-			return;
-		}
-
-		fs.readFile(dest, 'utf8', function (err, data) {
-			if (err) {
-				console.error(err);
-				process.exit(1);
-				return;
-			}
-
-			let result = data.replace(/{base}/g, `${lowerCase(route)}`);
-			result = result.replace(/{Base}/g, `${capitalCase(route)}`);
-
-			if (mwr) {
-				result = result.replace(
-					/{Middleware, }/g,
-					`${lowerCase(mwr)}Middleware, `,
-				);
-				result = result.replace(/--/g, '');
-				result = result.replace(/{mwrname}/g, `${lowerCase(mwr)}`);
-			} else {
-				result = result.replace(/{Middleware, }/g, ``);
-				result = result.replace(/--.*--/, '');
-			}
-
-			fs.writeFile(dest, result, 'utf8', function (err) {
-				if (err) {
-					console.error(err);
-					process.exit(1);
-					return;
-				}
-
-				console.log('Created the route file');
-			});
-		});
-	});
+	argCopy(src, dest, route, mwr);
 };
 
 const createService = (service) => {
@@ -136,34 +44,7 @@ const createService = (service) => {
 		`/Services/${lowerCase(service)}.service.js`,
 	);
 
-	fse.copy(src, dest, (err) => {
-		if (err) {
-			console.error(err);
-			process.exit(1);
-			return;
-		}
-
-		fs.readFile(dest, 'utf8', function (err, data) {
-			if (err) {
-				console.error(err);
-				process.exit(1);
-				return;
-			}
-
-			let result = data.replace(/{base}/g, `${lowerCase(service)}`);
-			result = result.replace(/{Base}/g, `${capitalCase(service)}`);
-
-			fs.writeFile(dest, result, 'utf8', function (err) {
-				if (err) {
-					console.error(err);
-					process.exit(1);
-					return;
-				}
-
-				console.log('Created the service file');
-			});
-		});
-	});
+	copy(src, dest, service);
 };
 
 const createMiddleware = (middleware) => {
@@ -175,40 +56,55 @@ const createMiddleware = (middleware) => {
 		`/Middlewares/${lowerCase(middleware)}.middleware.js`,
 	);
 
-	fse.copy(src, dest, (err) => {
-		if (err) {
-			console.error(err);
-			process.exit(1);
-			return;
-		}
-
-		fs.readFile(dest, 'utf8', function (err, data) {
-			if (err) {
-				console.error(err);
-				process.exit(1);
-				return;
-			}
-
-			let result = data.replace(/{base}/g, `${lowerCase(middleware)}`);
-
-			fs.writeFile(dest, result, 'utf8', function (err) {
-				if (err) {
-					console.error(err);
-					process.exit(1);
-					return;
-				}
-
-				console.log('Created the middleware file');
-			});
-		});
-	});
+	copy(src, dest, middleware);
 };
 
-const complete = (root) => {
-	createModel(root);
-	createController(root);
-	createRoute(root);
-	createService(root);
+const createFeatureFileStructure = (name) => {
+	!fs.existsSync(capitalCase(name)) && fs.mkdirSync(capitalCase(name));
+
+	let modelSource = path.join(__dirname, '/templates/Base.js');
+	let controllerSource = path.join(__dirname, '/templates/base.controller.js');
+	let routeSource = path.join(__dirname, '/templates/base.route.js');
+	let serviceSource = path.join(__dirname, '/templates/base.service.js');
+	let middlewareSource = path.join(__dirname, '/templates/base.middleware.js');
+
+	let modelDestination = path.join(
+		process.cwd(),
+		`/${capitalCase(name)}/${capitalCase(name)}.js`,
+	);
+	let controllerDestination = path.join(
+		process.cwd(),
+		`/${capitalCase(name)}/${lowerCase(name)}.controller.js`,
+	);
+	let routeDestination = path.join(
+		process.cwd(),
+		`/${name}/${lowerCase(name)}.route.js`,
+	);
+	let serviceDestination = path.join(
+		process.cwd(),
+		`/${name}/${lowerCase(name)}.service.js`,
+	);
+	let middlewareDestination = path.join(
+		process.cwd(),
+		`/${name}/${lowerCase(name)}.middleware.js`,
+	);
+
+	copy(modelSource, modelDestination, name, true);
+	copy(controllerSource, controllerDestination, name, true);
+	argCopy(routeSource, routeDestination, name, null, true);
+	copy(serviceSource, serviceDestination, name, true);
+	copy(middlewareSource, middlewareDestination, name, true);
+};
+
+const complete = (root, alter = false) => {
+	if (alter) {
+		createFeatureFileStructure(root);
+	} else {
+		createModel(root);
+		createController(root);
+		createRoute(root);
+		createService(root);
+	}
 };
 
 module.exports = {
