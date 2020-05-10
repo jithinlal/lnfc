@@ -9,6 +9,8 @@ With LNFC you could generate:
 - Routes
 - Middlewares
 
+Or just 5 files within one folder based on your feature.
+
 **With pre-generated CRUD operations enabled**
 
 ### Installation
